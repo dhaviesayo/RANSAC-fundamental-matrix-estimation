@@ -9,7 +9,7 @@ def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
     #Output: fundamental matrix (numpy array of shape (3, 3)).
 
     # Set parameters and initialize variables.
-    adaptive = False
+    adaptive = True
     pts1 = matchedpoints[0] # First set of points
     pts2 = matchedpoints[1]  # Second set of points
     size = pts1.shape[0]
@@ -29,7 +29,7 @@ def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
     inliers_count_arr = []  # Array to store no. of inliers for corresponding Fundamental Matrix.
 
     # RANSAC Loop
-    for i in range(num_trials):
+    for i in range(n):
         # Sample 8 points from correspondences pts1 and pts2.
         ## Generate 8 random unique integers between 0 and no. of correspondences for indices.
         indices = sorted(np.random.choice(size, s, replace=False))
