@@ -1,5 +1,7 @@
 import numpy as np
+import sys
 
+sys.setrecursionlimit(10000)
 
 
 def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
