@@ -1,3 +1,7 @@
+import numpy as np
+
+
+
 def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
     #Input: two lists of corresponding keypoints (numpy arrays of shape (N, 2)).
     #Output: fundamental matrix (numpy array of shape (3, 3)).
