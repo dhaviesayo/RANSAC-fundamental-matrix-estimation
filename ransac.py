@@ -32,7 +32,7 @@ def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
         train_pts1 = pts1[indices]
         train_pts2 = pts2[indices]
         ## Compute Fundamental Matrix using the function written above
-        F = FindFundamentalMatrix(train_pts1, train_pts2)
+        F = findfundamentalmatrix(train_pts1, train_pts2)
         F_arr.append(F)  # Append to list of fundamental matrices
 
         ## Calculate number of inliers and outliers using Fundamental matrix.
