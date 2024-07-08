@@ -1,9 +1,55 @@
 import numpy as np
-import sys
 
-sys.setrecursionlimit(10000)
+def f_computed(pts1, pts2):
+    #Input: two lists of corresponding keypoints (numpy arrays of shape (N, 2))
+    #Output: fundamental matrix (numpy array of shape (3, 3))
 
+    ctd_1 = np.mean(pts1, axis=0)
+    ctd_2 = np.mean(pts2, axis=0)
+    # Compute mean distance of all points to the centroids.
+    distances_1 = []
+    distances_2 = []
+    for i in range(pts1.shape[0]):
+        distances_1.append(math.dist(pts1[i], ctd_1))
+        distances_2.append(math.dist(pts2[i], ctd_2))
 
+    distances_1 = np.array(distances_1)
+    distances_2 = np.array(distances_2)
+    mean_dist_1 = np.mean(distances_1, axis=0)
+    mean_dist_2 = np.mean(distances_2, axis=0)
+
+    # Apply translation to the points to bring centroid to origin.
+    ones = np.ones((pts1.shape[0], 1), dtype=np.int32)
+    pts1 = np.hstack((pts1, ones))
+    pts2 = np.hstack((pts2, ones))
+    T1 = Construct_Transformation_Matrix(mean_dist_1, -ctd_1[0], -ctd_1[1])
+    T2 = Construct_Transformation_Matrix(mean_dist_2, -ctd_2[0], -ctd_2[1])
+    pts1_new = (T1 @ pts1.T) # 3 x N
+    pts2_new = (T2 @ pts2.T) # 3 x N
+
+    A = np.zeros((pts1_new.shape[1], 9))
+    for i in range(pts1_new.shape[1]):
+        x1 = np.array([pts1_new[:, i]]).reshape((3, 1))
+        x2 = np.array([pts2_new[:, i]]).reshape((3, 1))
+        row = x2 @ x1.T
+        row = np.reshape(row, (1, 9))
+        A[i] = row
+
+    u, sig, vh = np.linalg.svd(A)
+    v = vh.T
+    F_est = v[:, -1]
+    F_est = np.reshape(F_est, (3, 3))
+    # Now find SVD for F_est and make it a rank 2 matrix by setting 3rd eigen value to 0 and recalculate F.
+    u, sig, vh = np.linalg.svd(F_est)
+    sig[2] = 0
+    F = u @ np.diag(sig) @ vh
+    # Denormalize the matrix F with the translation matrix that we applied for 2 images' points.
+    F_mat = T2.T @ F @ T1
+    # Since the last coordinate can be voided as a scaling factor, we can normalize the fundamental matrix with it.
+    # (Eight point Algorithm)
+    F_mat = F_mat * (1 / F_mat[2, 2])
+    return F_mat
+    
 def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
     #Input: two lists of corresponding keypoints (numpy arrays of shape (N, 2)).
     #Output: fundamental matrix (numpy array of shape (3, 3)).
@@ -36,7 +82,7 @@ def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
         train_pts1 = pts1[indices]
         train_pts2 = pts2[indices]
         ## Compute Fundamental Matrix using the function written above
-        F = findfundamentalmatrix([train_pts1, train_pts2])
+        F = f_computed(train_pts1, train_pts2)
         F_arr.append(F)  # Append to list of fundamental matrices
 
         ## Calculate number of inliers and outliers using Fundamental matrix.
