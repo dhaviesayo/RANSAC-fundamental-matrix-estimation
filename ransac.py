@@ -17,9 +17,11 @@ def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
 
     e = 0.5  # Assumption Outlier Ratio => no. of outliers / no. of points
     # Adaptively determining value of trials/ iterations - N
-    if adaptive:
+    if adaptive == True:
         p = 0.95  # Required probability of Success
-        N = np.log(1-p) / np.log(1 - (pow(1-e, s)))
+        n = int(np.log(1-p) / np.log(1 - (pow(1-e, s))))
+    else:
+        n = num_trials
 
     F_arr = []  # Array to store Fundamental matrices for each set of sample points.
     inliers_count_arr = []  # Array to store no. of inliers for corresponding Fundamental Matrix.
