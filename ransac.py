@@ -13,7 +13,7 @@ def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
     size = pts1.shape[0]
     s = 8  # no of point pairs required to compute fundamental matrix
     t = threshold  # Epsilon threshold
-    N = num_trials
+    n = num_trials
 
     e = 0.5  # Assumption Outlier Ratio => no. of outliers / no. of points
     # Adaptively determining value of trials/ iterations - N
@@ -25,7 +25,7 @@ def findfundamentalmatrix(matchedpoints , num_trials = 1000, threshold = 0.01):
     inliers_count_arr = []  # Array to store no. of inliers for corresponding Fundamental Matrix.
 
     # RANSAC Loop
-    for i in range(int(N)):
+    for i in range(num_trials):
         # Sample 8 points from correspondences pts1 and pts2.
         ## Generate 8 random unique integers between 0 and no. of correspondences for indices.
         indices = sorted(np.random.choice(size, s, replace=False))
